@@ -10,7 +10,7 @@ Nothing special, just hooks, event listeners etc.
 
 # keyboard-testing.py
 
-Has ability to change last word on f7 key press, clear last word on space, though needs improvements.
+Uses [keyboard](https://github.com/boppreh/keyboard) lib, has ability to change last word on f7 key press, clear last word on space, though needs improvements.
 
 # X11-EventListener.c
 
