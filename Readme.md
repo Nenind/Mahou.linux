@@ -12,6 +12,14 @@ Nothing special, just hooks, event listeners etc.
 
 Uses [keyboard](https://github.com/boppreh/keyboard) framework.
 Has ability to change last word on f7 key press, though for it to work you'll need to set keyboard shortcut Alt+Shift to change layout in system settings, clear last word on some keys press **has no mouse clicks clear**.
+Now has ability to convert selected text on f6 key press, using improved **by_dict_conversion.py** and crossplatform clipboard framework - **pyperclip**.
+
+How to test: 
+
+1. Install requirements using `pip3 install -r keyboard-testing-requirements.txt` command.
+2. In terminal run `python3 keyboard-testing.py`.
+3. Try typing some text and press f7.
+4. Try selecting text and press f6.
 
 # X11-Hooks.c
 
@@ -25,7 +33,7 @@ Also `sudo` is **required** for keyboard/mouse hooks to work globally without er
 
 F7 to simulate input of **1** on keyboard. F4 to exit.
 
-# by-dict-conversion.py
+# by_dict_conversion.py
 
 Has basic string conversion from english to russian and vice versa keyboard inputs, using dictionary I created in it. 
 

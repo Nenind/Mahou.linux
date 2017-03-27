@@ -1,5 +1,5 @@
-﻿dict = {}
-def buildDict():
+﻿def buildDict():
+    dict = {}
     ruline = 'ё1234567890-=\йцукенгшщзхъфывапролджэячсмитьбю.'
     rulineshift = 'Ё!"№;%:?*()_+/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,'
     enline = '`1234567890-=\qwertyuiop[]asdfghjkl;\'zxcvbnm,./'
@@ -7,11 +7,12 @@ def buildDict():
     for rc, ec, rcs, ecs in zip(ruline, enline, rulineshift, enlineshift):
         dict[rc] = ec
         dict[rcs] = ecs
+    return dict
 
-def convert(string):
+def convert(string, dict):
     out = ""
     words = string.split(' ')
-    print("----Debug start(ignore this)----")
+    # print("----Debug start(ignore this)----")
     for word in words:
         keys_count = 0
         vals_count = 0
@@ -32,10 +33,10 @@ def convert(string):
             out += keys_word
         if word != words[-1]:
             out+=' '
-    print("----Debug end----")
+    # print("----Debug end----")
     return out
-
-buildDict()
-print("Double side conversion demo:");
-result = convert(input("Enter english or/and russian letters/words:\n"))
-print("result:\n" + result)
+if __name__ == '__main__':
+    dict = buildDict()
+    print("Double side conversion demo:");
+    result = convert(input("Enter english or/and russian letters/words:\n"), dict)
+    print("result:\n" + result)
