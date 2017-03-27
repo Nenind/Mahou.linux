@@ -26,7 +26,7 @@ def convert(string, dict):
                 if i == v:
                     vals_word = vals_word.replace(i, k)
                     vals_count+=1
-        print("Vals: " + str(vals_count) + ", Keys: " + str(keys_count)+" Valw: " + vals_word + ", Keyw: " + keys_word)
+        # print("Vals: " + str(vals_count) + ", Keys: " + str(keys_count)+" Valw: " + vals_word + ", Keyw: " + keys_word)
         if vals_count >= keys_count:
             out += vals_word
         else:
