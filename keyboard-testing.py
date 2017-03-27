@@ -6,7 +6,7 @@ import datetime
 cword = []
 _self = False
 cThread = threading.Thread()
-
+clearkeys = ["space", "enter", "home", "end", "esc", "tab", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12", "win", "left", "up", "right", "down"]
 def gettime(time: float):
     return datetime.datetime.fromtimestamp(time).strftime('%Y-%m-%d %H:%M:%S.%f')
 
@@ -20,9 +20,12 @@ def KeyboardHookCallback(kbd_event: keyboard.KeyboardEvent):
     print(str(_self) + " and " + str(name != 'f7') + " and " + name)
     if not _self and name != 'f7':
         if event == 'down':
-            cword.append(scan)
-            if (name == 'space'):
+            if name == 'backspace':
+                cword.pop()
+            elif name in clearkeys:
                 cword = []
+            else:
+                cword.append(scan)
         print("Key with name: [" + name + "] and scan: [" + str(scan) + "] -> [" + event + "] in "+gettime(kbd_event.time)+".")
 
 def endedConversion(sleep_time):
@@ -40,7 +43,7 @@ def ConvertLast():
     if not _self:
         _self = True
         keyboard.remove_hotkey('f7')
-        sleep_time = len(cword) * 2 * 0.01 # Calculate time to sleep, 10 ms for every character
+        sleep_time = len(cword) * 2 * 0.02 # Calculate time to sleep, 10 ms for every character
         for i in range(0, len(cword)):
             keyboard.press_and_release('backspace')
         keyboard.press_and_release('alt+shift')
