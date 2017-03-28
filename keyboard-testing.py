@@ -2,6 +2,7 @@ import keyboard
 import pyperclip
 import threading
 import time
+import os
 import datetime
 from by_dict_conversion import buildDict, convert
 
@@ -50,7 +51,7 @@ def ConvertLast():
         sleep_time = len(cword) * 2 * 0.02 # Calculate time to sleep, 10 ms for every character
         for i in range(0, len(cword)):
             keyboard.press_and_release('backspace')
-        keyboard.press_and_release('alt+shift')
+        os.system('bash ./change-layout.sh') # Changing layout
         for scan in cword:
             keyboard.press_and_release(scan)
         if not cThread.is_alive(): # Prevent already started thread exception
