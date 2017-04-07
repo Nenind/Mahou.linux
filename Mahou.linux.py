@@ -7,6 +7,8 @@ import os
 import datetime
 from by_dict_conversion import buildDict, convert
 
+__version__ = '0.251'
+
 cword = []
 _self = False
 cThread = threading.Thread()
@@ -86,8 +88,14 @@ def ConvertSelection():
             cThread = threading.Thread(target=endedConversion, args=(sleep_time,'f6',ConvertSelection,))
             cThread.start()
     pyperclip.copy(bkp)
-keyboard.register_hotkey('f7', ConvertLast)
-keyboard.register_hotkey('f6', ConvertSelection)
-keyboard.hook(KeyboardHookCallback)
-mouse.hook(MouseHookCallBack)
-keyboard.wait('f4')
+def Init():
+    print('Initializing hotkeys, hooks...')
+    keyboard.register_hotkey('f7', ConvertLast)
+    keyboard.register_hotkey('f6', ConvertSelection)
+    keyboard.hook(KeyboardHookCallback)
+    mouse.hook(MouseHookCallBack)
+    print('Done.\n Hotkeys:\n\tPress F7 to convert last word.\n\tPress F6 to convert selection.\n\tPress F4 to close Mahou.linux.')
+    keyboard.wait('f4')
+
+if __name__ == '__main__':
+    Init()
