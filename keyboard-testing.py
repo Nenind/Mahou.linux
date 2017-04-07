@@ -1,4 +1,5 @@
 import keyboard
+from keyboard import mouse
 import pyperclip
 import threading
 import time
@@ -28,10 +29,17 @@ def KeyboardHookCallback(kbd_event: keyboard.KeyboardEvent):
             if name == 'backspace':
                 cword.pop()
             elif name in clearkeys:
-                cword = []
+                cword.clear()
             else:
                 cword.append(scan)
         print("Key with name: [" + name + "] and scan: [" + str(scan) + "] -> [" + event + "] in "+gettime(kbd_event.time)+".")
+
+def MouseHookCallBack(m_event: mouse.ButtonEvent):
+    """Main mouse hook callback."""
+    global cword
+    if hasattr(m_event, 'event_type'):
+        print("Mouse event -> " + m_event.event_type)
+        cword.clear()
 
 def endedConversion(sleep_time, hotkey, action):
     global _self
@@ -42,16 +50,21 @@ def endedConversion(sleep_time, hotkey, action):
     print("Ended Conversion. (" + str(sleep_time) +")")
 
 def ConvertLast():
+    global cword
     global _self
     global cThread
     print("OK "+str(len(cword)))
-    if not _self:
+    if not _self and len(cword) > 0:
         _self = True
         keyboard.remove_hotkey('f7')
-        sleep_time = len(cword) * 2 * 0.02 # Calculate time to sleep, 10 ms for every character
+        sleep_time = len(cword) * 2 * 0.005 # Calculate time to sleep, 5 ms for every character
         for i in range(0, len(cword)):
             keyboard.press_and_release('backspace')
-        os.system('bash ./change-layout.sh') # Changing layout
+        # Changing layout using system
+        # os.system('bash ./change-layout.sh')
+        # Changing layout by Alt+Shift
+        keyboard.press_and_release("alt+shift")
+        time.sleep(0.05)
         for scan in cword:
             keyboard.press_and_release(scan)
         if not cThread.is_alive(): # Prevent already started thread exception
@@ -76,4 +89,5 @@ def ConvertSelection():
 keyboard.register_hotkey('f7', ConvertLast)
 keyboard.register_hotkey('f6', ConvertSelection)
 keyboard.hook(KeyboardHookCallback)
+mouse.hook(MouseHookCallBack)
 keyboard.wait('f4')
