@@ -8,10 +8,10 @@ Nothing special, just hooks, event listeners etc.
 - xev
 - ...
 
-# keyboard-testing.py
+# Mahou.linux.py
 
 Uses [keyboard](https://github.com/boppreh/keyboard) framework.
-Has ability to change last word on f7 key press, though for it to work you'll need to set keyboard shortcut Alt+Shift to change layout in system settings, clear last word on some keys press **has no mouse clicks clear**.
+Has ability to change last word on f7 key press, though for it to work you'll need to set keyboard shortcut Alt+Shift to change layout in system settings, clear last word on some keys press **and _has_ mouse clicks clear**.
 Now has ability to convert selected text on f6 key press, using improved **by_dict_conversion.py** and crossplatform clipboard framework - **pyperclip**.
 
 How to test: 
