@@ -1,4 +1,5 @@
-﻿def buildDict():
+﻿import re
+def buildDict():
     dict = {}
     ruline = 'ё1234567890-=\йцукенгшщзхъфывапролджэячсмитьбю.'
     rulineshift = 'Ё!"№;%:?*()_+/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,'
@@ -11,28 +12,33 @@
 
 def convert(string, dict):
     out = ""
-    words = string.split(' ')
-    # print("----Debug start(ignore this)----")
-    for word in words:
-        keys_count = 0
-        vals_count = 0
-        keys_word = word
-        vals_word = word
-        for i in word:
-            for k, v in dict.items():
-                if i == k:
-                    keys_word = keys_word.replace(i, v)
-                    keys_count+=1
-                if i == v:
-                    vals_word = vals_word.replace(i, k)
-                    vals_count+=1
-        # print("Vals: " + str(vals_count) + ", Keys: " + str(keys_count)+" Valw: " + vals_word + ", Keyw: " + keys_word)
-        if vals_count >= keys_count:
-            out += vals_word
-        else:
-            out += keys_word
-        if word != words[-1]:
-            out+=' '
+    strlf = re.sub("\r\n?|\n", "\n", string)
+    lines = strlf.split('\n')
+    for line in lines:
+        words = line.split(' ')
+        # print("----Debug start(ignore this)----")
+        for word in words:
+            keys_count = 0
+            vals_count = 0
+            keys_word = word
+            vals_word = word
+            for i in word:
+                for k, v in dict.items():
+                    if i == k:
+                        keys_word = keys_word.replace(i, v)
+                        keys_count+=1
+                    if i == v:
+                        vals_word = vals_word.replace(i, k)
+                        vals_count+=1
+            # print("Vals: " + str(vals_count) + ", Keys: " + str(keys_count)+" Valw: " + vals_word + ", Keyw: " + keys_word)
+            if vals_count >= keys_count:
+                out += vals_word
+            else:
+                out += keys_word
+            if word != words[-1]:
+                out+=' '
+        if line != lines[-1]:
+            out+='\n'
     # print("----Debug end----")
     return out
 if __name__ == '__main__':

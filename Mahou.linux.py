@@ -4,15 +4,18 @@ import pyperclip
 import threading
 import time
 import os
+import sys
 import datetime
 from by_dict_conversion import buildDict, convert
 
-__version__ = '0.251'
+sim = True
+logging = False
+__version__ = '0.254'
 
 cword = []
 _self = False
 cThread = threading.Thread()
-hotkeys = ["f7", "f6", "f4"]
+hotkeys = ["f7", "f6", "f4", "capslock"]
 clearkeys = ["space", "enter", "home", "end", "esc", "tab", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12", "win", "left", "up", "right", "down"]
 dict = buildDict()
 
@@ -23,6 +26,7 @@ def KeyboardHookCallback(kbd_event: keyboard.KeyboardEvent):
     """Main keyboard hook callback."""
     global cword
     global _self
+    global logging
     scan = kbd_event.scan_code
     name = kbd_event.name
     event = kbd_event.event_type
@@ -34,23 +38,35 @@ def KeyboardHookCallback(kbd_event: keyboard.KeyboardEvent):
                 cword.clear()
             else:
                 cword.append(scan)
-        print("Key with name: [" + name + "] and scan: [" + str(scan) + "] -> [" + event + "] in "+gettime(kbd_event.time)+".")
+        if logging:
+            print("Key with name: [" + name + "] and scan: [" + str(scan) + "] -> [" + event + "] in "+gettime(kbd_event.time)+".")
 
 def MouseHookCallBack(m_event: mouse.ButtonEvent):
     """Main mouse hook callback."""
     global cword
+    global logging
     if hasattr(m_event, 'event_type'):
-        print("Mouse event -> " + m_event.event_type)
+        if logging:
+            print("Mouse event -> " + m_event.event_type)
         cword.clear()
 
 def endedConversion(sleep_time, hotkey, action):
     global _self
     global cThread
+    global logging
     time.sleep(sleep_time)
     _self = False
     keyboard.register_hotkey(hotkey, action)
-    print("Ended Conversion. (" + str(sleep_time) +")")
-
+    if logging:
+         print("Ended Conversion. (" + str(sleep_time) +")")
+def ChangeLayout():
+    global sim
+    if sim:    
+        # Changing layout by Alt+Shift
+        keyboard.press_and_release("alt+shift")
+    else:
+        # Changing layout using system
+        os.system('bash ./change-layout.sh')
 def ConvertLast():
     global cword
     global _self
@@ -62,10 +78,7 @@ def ConvertLast():
         sleep_time = len(cword) * 2 * 0.005 # Calculate time to sleep, 5 ms for every character
         for i in range(0, len(cword)):
             keyboard.press_and_release('backspace')
-        # Changing layout using system
-        # os.system('bash ./change-layout.sh')
-        # Changing layout by Alt+Shift
-        keyboard.press_and_release("alt+shift")
+        ChangeLayout()
         time.sleep(0.05)
         for scan in cword:
             keyboard.press_and_release(scan)
@@ -79,23 +92,33 @@ def ConvertSelection():
     pyperclip.copy('')
     keyboard.press_and_release('ctrl+c')
     ClipStr = pyperclip.paste()
+    print(ClipStr)
     if ClipStr != "":
         _self = True
         keyboard.press_and_release('backspace')
-        sleep_time = len(ClipStr) * 0.02 # Calculate time to sleep, 10 ms for every character
+        sleep_time = len(ClipStr) * 0.005 # Calculate time to sleep, 10 ms for every character
+        pyperclip.copy(convert(ClipStr, dict))
+        print(pyperclip.paste())
         keyboard.write(convert(ClipStr, dict))
+        # keyboard.press_and_release('shift+insert')
+        time.sleep(0.05)
         if not cThread.is_alive():
             cThread = threading.Thread(target=endedConversion, args=(sleep_time,'f6',ConvertSelection,))
             cThread.start()
     pyperclip.copy(bkp)
 def Init():
+    global logging
+    if len(sys.argv) > 1:
+        if sys.argv[1] == '-l':
+            logging = True
     print('Initializing hotkeys, hooks...')
-    keyboard.register_hotkey('f7', ConvertLast)
-    keyboard.register_hotkey('f6', ConvertSelection)
+    keyboard.register_hotkey(hotkeys[0], ConvertLast)
+    keyboard.register_hotkey(hotkeys[1], ConvertSelection)
+    keyboard.register_hotkey(hotkeys[3], ChangeLayout)
     keyboard.hook(KeyboardHookCallback)
     mouse.hook(MouseHookCallBack)
-    print('Done.\n Hotkeys:\n\tPress F7 to convert last word.\n\tPress F6 to convert selection.\n\tPress F4 to close Mahou.linux.')
-    keyboard.wait('f4')
+    print('Done.\n Hotkeys:\n\tPress CapsLock to change layout(you can change type in source).\n\tPress F7 to convert last word.\n\tPress F6 to convert selection.\n\tPress F4 to close Mahou.linux.')
+    keyboard.wait(hotkeys[2])
 
 if __name__ == '__main__':
     Init()

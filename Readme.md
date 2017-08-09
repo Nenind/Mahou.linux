@@ -20,6 +20,11 @@ How to test:
 2. In terminal run `python3 keyboard-testing.py`.
 3. Try typing some text and press f7.
 4. Try selecting text and press f6.
+5. Try switching layout by CapsLock.(If it now works try changing mode in line 11 in `keyboard-testing.py` sim = False.
+
+- It can be used hiddenly, rename keyboard-testing.py to keyboard-testing.pyw and run, it will work.
+- Logging disabled now by default to enable it run `python3 keyboard-testing.py -l`.
+- You can change hotkeys/etc. in source lines 10\~20.
 
 # X11-Hooks.c
 
