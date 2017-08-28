@@ -43,6 +43,15 @@ def convert(string, dict):
     return out
 if __name__ == '__main__':
     dict = buildDict()
-    print("Double side conversion demo:");
-    result = convert(input("Enter english or/and russian letters/words:\n"), dict)
+    import sys
+    result = ""
+    if len(sys.argv) > 0:
+        if sys.argv[1] == '--file':
+            with open(sys.argv[2],'r', encoding="utf-8") as f:
+                result = convert(f.read(), dict)
+        else:
+            result = convert(sys.argv[1], dict)
+    else:
+        print("Double side conversion demo:");
+        result = convert(input("Enter english or/and russian letters/words:\n"), dict)
     print("result:\n" + result)
