@@ -8,15 +8,16 @@ import sys
 import datetime
 from by_dict_conversion import buildDict, convert
 
+
 sim = True
 logging = False
 __version__ = '0.254'
-
+flag = False
 cword = []
 _self = False
 cThread = threading.Thread()
-hotkeys = ["f7", "f6", "f4", "capslock"]
-clearkeys = ["space", "enter", "home", "end", "esc", "tab", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12", "win", "left", "up", "right", "down"]
+hotkeys = ["shift", "f6", "f4", "capslock"]
+clearkeys = ["enter", "home", "end", "esc", "tab", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12", "win"]
 dict = buildDict()
 
 def gettime(time: float):
@@ -58,7 +59,7 @@ def endedConversion(sleep_time, hotkey, action):
     _self = False
     keyboard.register_hotkey(hotkey, action)
     if logging:
-         print("Ended Conversion. (" + str(sleep_time) +")")
+        print("Ended Conversion. (" + str(sleep_time) +")")
 def ChangeLayout():
     global sim
     if sim:    
@@ -67,24 +68,36 @@ def ChangeLayout():
     else:
         # Changing layout using system
         os.system('bash ./change-layout.sh')
+
+
+
 def ConvertLast():
     global cword
     global _self
     global cThread
-    print("OK "+str(len(cword)))
-    if not _self and len(cword) > 0:
-        _self = True
-        keyboard.remove_hotkey('f7')
-        sleep_time = len(cword) * 2 * 0.005 # Calculate time to sleep, 5 ms for every character
-        for i in range(0, len(cword)):
-            keyboard.press_and_release('backspace')
-        ChangeLayout()
-        time.sleep(0.05)
-        for scan in cword:
-            keyboard.press_and_release(scan)
-        if not cThread.is_alive(): # Prevent already started thread exception
-            cThread = threading.Thread(target=endedConversion, args=(sleep_time,'f7',ConvertLast,))
-            cThread.start()
+    global flag
+    global curtime
+    if flag:
+        if round(time.time()*1000)-curtime < 500:
+            print("OK "+str(len(cword)))
+            if not _self and len(cword) > 0:
+                _self = True
+                sleep_time = len(cword) * 2 * 0.005 # Calculate time to sleep, 5 ms for every character
+                for i in range(0, len(cword)):
+                    keyboard.press_and_release('backspace')
+                ChangeLayout()
+                time.sleep(0.05)
+                for scan in cword:
+                    keyboard.press_and_release(scan)
+                if not cThread.is_alive(): # Prevent already started thread exception
+                    cThread = threading.Thread(target=endedConversion, args=(sleep_time,'f7',ConvertLast,))
+                    cThread.start()
+        flag = False
+    else:
+        flag = True
+        curtime = round(time.time()*1000)
+    
+    
 def ConvertSelection():
     global _self
     global cThread
@@ -114,10 +127,9 @@ def Init():
     print('Initializing hotkeys, hooks...')
     keyboard.register_hotkey(hotkeys[0], ConvertLast)
     keyboard.register_hotkey(hotkeys[1], ConvertSelection)
-    keyboard.register_hotkey(hotkeys[3], ChangeLayout)
     keyboard.hook(KeyboardHookCallback)
     mouse.hook(MouseHookCallBack)
-    print('Done.\n Hotkeys:\n\tPress CapsLock to change layout(you can change type in source).\n\tPress F7 to convert last word.\n\tPress F6 to convert selection.\n\tPress F4 to close Mahou.linux.')
+    print('Done.\n Hotkeys:\n\t.\n\tDouble Shift to convert last word.\n\tPress F6 to convert selection.\n\tPress F4 to close Mahou.linux.')
     keyboard.wait(hotkeys[2])
 
 if __name__ == '__main__':
