@@ -16,8 +16,8 @@ flag = False
 cword = []
 _self = False
 cThread = threading.Thread()
-hotkeys = ["shift", "f6", "f4", "capslock"]
-clearkeys = ["enter", "home", "end", "esc", "tab", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12", "win"]
+hotkeys = ["shift", "ctrl+shift+X", "f4", "capslock"]
+clearkeys = ['backspace', 'left windows', 'enter', 'home', 'end', "esc", "tab", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12", "win", "windows", "left", "up", "right", "down"]
 dict = buildDict()
 
 def gettime(time: float):
@@ -33,9 +33,9 @@ def KeyboardHookCallback(kbd_event: keyboard.KeyboardEvent):
     event = kbd_event.event_type
     if not _self and name not in hotkeys:
         if event == 'down':
-            if name == 'backspace':
-                cword.pop()
-            elif name in clearkeys:
+            # if name == 'backspace':
+            #     cword.pop()
+            if name in clearkeys:
                 cword.clear()
             else:
                 cword.append(scan)
@@ -82,16 +82,17 @@ def ConvertLast():
             print("OK "+str(len(cword)))
             if not _self and len(cword) > 0:
                 _self = True
-                sleep_time = len(cword) * 2 * 0.005 # Calculate time to sleep, 5 ms for every character
+                sleep_time = 0
+                # sleep_time = len(cword) * 2 * 0.005                 # Calculate time to sleep, 5 ms for every character
                 for i in range(0, len(cword)):
                     keyboard.press_and_release('backspace')
                 ChangeLayout()
-                time.sleep(0.05)
                 for scan in cword:
                     keyboard.press_and_release(scan)
-                if not cThread.is_alive(): # Prevent already started thread exception
+                if not cThread.is_alive():
                     cThread = threading.Thread(target=endedConversion, args=(sleep_time,'f7',ConvertLast,))
                     cThread.start()
+                time.sleep(0.05)
         flag = False
     else:
         flag = True
@@ -109,11 +110,10 @@ def ConvertSelection():
     if ClipStr != "":
         _self = True
         keyboard.press_and_release('backspace')
-        sleep_time = len(ClipStr) * 0.005 # Calculate time to sleep, 10 ms for every character
+        sleep_time = len(ClipStr) * 0.005
         pyperclip.copy(convert(ClipStr, dict))
         print(pyperclip.paste())
         keyboard.write(convert(ClipStr, dict))
-        # keyboard.press_and_release('shift+insert')
         time.sleep(0.05)
         if not cThread.is_alive():
             cThread = threading.Thread(target=endedConversion, args=(sleep_time,'f6',ConvertSelection,))
@@ -124,12 +124,14 @@ def Init():
     if len(sys.argv) > 1:
         if sys.argv[1] == '-l':
             logging = True
-    print('Initializing hotkeys, hooks...')
     keyboard.register_hotkey(hotkeys[0], ConvertLast)
     keyboard.register_hotkey(hotkeys[1], ConvertSelection)
     keyboard.hook(KeyboardHookCallback)
     mouse.hook(MouseHookCallBack)
-    print('Done.\n Hotkeys:\n\t.\n\tDouble Shift to convert last word.\n\tPress F6 to convert selection.\n\tPress F4 to close Mahou.linux.')
+    print("""Hotkeys:
+    Double SHIFT to convert last line.
+    CTRL+SHIFT+X to convert selection.
+    F4 to close Mahou.linux.""")
     keyboard.wait(hotkeys[2])
 
 if __name__ == '__main__':
